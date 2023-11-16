@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <time.h>
 #include <math.h>
@@ -104,13 +105,15 @@ int main()
     srand(time(NULL));
     int tam, numCasos = 0, numExecucoes = 0;
 
+    cout << "Digite o tamanho do vetor: ";
+    cin >> tam;
+
     while (true) {
-
-        cout << "Digite o tamanho do vetor: ";
-        cin >> tam;
-
         int* original = new int[tam];
         int* copia = new int[tam];
+        int* vetorPrimeiroPivo = new int[tam];
+        int* vetorMeioPivo = new int[tam];
+        int* vetorUltimoPivo = new int[tam];
 
         cout << "Digite a quantidade de casos desejados: ";
         cin >> numCasos;
@@ -122,8 +125,29 @@ int main()
         preencherVetor(original, tam);
         mostrarVetor(original, tam);
 
-        for (int caso = 0; caso < numCasos; ++caso) {
+        for (int i = 0; i < tam; i++) {
+            vetorPrimeiroPivo[i] = original[i];
+            vetorMeioPivo[i] = original[i];
+            vetorUltimoPivo[i] = original[i];
+        }
 
+        quicksort(vetorPrimeiroPivo, 0, tam - 1, escolherPrimeiroPivo);
+        quicksort(vetorMeioPivo, 0, tam - 1, escolherPivoMeio);
+        quicksort(vetorUltimoPivo, 0, tam - 1, escolherUltimoPivo);
+
+        cout << "\nVetor Quicksort (Primeiro pivo): ";
+        mostrarVetor(vetorPrimeiroPivo, tam);
+        cout << endl;
+
+        cout << "Vetor Quicksort (Pivo do meio): ";
+        mostrarVetor(vetorMeioPivo, tam);
+        cout << endl;
+
+        cout << "Vetor Quicksort (Ultimo pivo): ";
+        mostrarVetor(vetorUltimoPivo, tam);
+        cout << endl;
+
+        for (int caso = 0; caso < numCasos; ++caso) {
             if (caso == 0) {
                 gerarMelhorCaso(copia, tam);
                 cout << "\nMelhor caso: ";
@@ -142,7 +166,6 @@ int main()
             if (caso == 0 || caso == 1) {
                 quicksort(copia, 0, tam - 1, escolherPrimeiroPivo);
             }
-
             else {
                 auto start = chrono::high_resolution_clock::now();
                 shellsort(copia, tam);
@@ -154,7 +177,12 @@ int main()
 
         delete[] original;
         delete[] copia;
+        delete[] vetorPrimeiroPivo;
+        delete[] vetorMeioPivo;
+        delete[] vetorUltimoPivo;
+
         cout << endl;
     }
+
     return 0;
 }
