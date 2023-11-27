@@ -68,8 +68,8 @@ void Shell(int v[], int r, int s, int n) {
 	}
 }
 
-void shellsort(int v[], int tam) {
-	for (int i = 2; i >= 0; i--) {
+void shellsortGrupos(int v[], int tam, int grupos) {
+	for (int i = grupos - 1; i >= 0; i--) {
 		int inc = pow(2, i);
 		for (int j = 0; j <= inc; j++) {
 			Shell(v, inc, j, tam);
@@ -127,7 +127,7 @@ int main() {
 	for (int k = 0; k < qtdExecucoes; ++k) {
 		// grupo 4
 		auto startG4 = chrono::high_resolution_clock::now();
-		shellsort(vetormelhor, tamVetor);
+		shellsortGrupos(vetormelhor, tamVetor, 4);
 		auto endG4 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG4 = endG4 - startG4;
 		tempoMelhor4[k] = tempoExecucaoG4.count();
@@ -137,7 +137,7 @@ int main() {
 
 		// grupo 6
 		auto startG6 = chrono::high_resolution_clock::now();
-		shellsort(vetormelhor, tamVetor);
+		shellsortGrupos(vetormelhor, tamVetor, 6);
 		auto endG6 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG6 = endG6 - startG6;
 		tempoMelhor6[k] = tempoExecucaoG6.count();
@@ -147,7 +147,7 @@ int main() {
 
 		// grupo 8
 		auto startG8 = chrono::high_resolution_clock::now();
-		shellsort(vetormelhor, tamVetor);
+		shellsortGrupos(vetormelhor, tamVetor, 6);
 		auto endG8 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG8 = endG8 - startG8;
 		tempoMelhor8[k] = tempoExecucaoG8.count();
@@ -169,7 +169,7 @@ int main() {
 	for (int k = 0; k < qtdExecucoes; ++k) {
 		// grupo 4
 		auto startG4 = chrono::high_resolution_clock::now();
-		shellsort(vetorpior, tamVetor);
+		shellsortGrupos(vetorpior, tamVetor, 4);
 		auto endG4 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG4 = endG4 - startG4;
 		tempoPior4[k] = tempoExecucaoG4.count();
@@ -179,7 +179,7 @@ int main() {
 
 		// grupo 6
 		auto startG6 = chrono::high_resolution_clock::now();
-		shellsort(vetorpior, tamVetor);
+		shellsortGrupos(vetorpior, tamVetor, 6);
 		auto endG6 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG6 = endG6 - startG6;
 		tempoPior6[k] = tempoExecucaoG6.count();
@@ -189,7 +189,7 @@ int main() {
 
 		// grupo 8
 		auto startG8 = chrono::high_resolution_clock::now();
-		shellsort(vetorpior, tamVetor);
+		shellsortGrupos(vetorpior, tamVetor, 8);
 		auto endG8 = chrono::high_resolution_clock::now();
 		chrono::duration<double> tempoExecucaoG8 = endG8 - startG8;
 		tempoPior8[k] = tempoExecucaoG8.count();
@@ -212,7 +212,7 @@ int main() {
 		for (int k = 0; k < qtdExecucoes; ++k) {
 			// grupo 4
 			auto startG4 = chrono::high_resolution_clock::now();
-			shellsort(vetorcaso, tamVetor);
+			shellsortGrupos(vetorcaso, tamVetor, 4);
 			auto endG4 = chrono::high_resolution_clock::now();
 			chrono::duration<double> tempoExecucaoG4 = endG4 - startG4;
 			vetTempoCasos[y].vetG4[k] = tempoExecucaoG4.count();
@@ -222,7 +222,7 @@ int main() {
 
 			// grupo 6
 			auto startG6 = chrono::high_resolution_clock::now();
-			shellsort(vetorcaso, tamVetor);
+			shellsortGrupos(vetorcaso, tamVetor, 6);
 			auto endG6 = chrono::high_resolution_clock::now();
 			chrono::duration<double> tempoExecucaoG6 = endG6 - startG6;
 			vetTempoCasos[y].vetG6[k] = tempoExecucaoG6.count();
@@ -232,7 +232,7 @@ int main() {
 
 			// grupo 8
 			auto startG8 = chrono::high_resolution_clock::now();
-			shellsort(vetorcaso, tamVetor);
+			shellsortGrupos(vetorcaso, tamVetor, 6);
 			auto endG8 = chrono::high_resolution_clock::now();
 			chrono::duration<double> tempoExecucaoG8 = endG8 - startG8;
 			vetTempoCasos[y].vetG8[k] = tempoExecucaoG8.count();
