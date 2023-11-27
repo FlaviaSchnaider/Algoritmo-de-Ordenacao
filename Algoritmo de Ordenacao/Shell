@@ -1,0 +1,364 @@
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <chrono>
+
+#define limite 10000
+using namespace std;
+
+struct vetorcasos {
+    double vetPrimeiro[limite];
+    double vetMeio[limite];
+    double vetUltimo[limite];
+    double vetMedio[limite];
+};
+
+void perguntarVezes(int& vetorTam, int& qtdCasos, int& qtdExecucoes) {
+    cout << "Digite o tamanho do vetor: ";
+    cin >> vetorTam;
+    cout << "Digite a quantidade de casos desejados: ";
+    cin >> qtdCasos;
+    cout << "Digite a quantidade de execucoes por caso: ";
+    cin >> qtdExecucoes;
+}
+
+void preencher_vetor(int v[], int tam) {
+
+    for (int i = 0; i < tam; i++) {
+        v[i] = rand() % limite;
+    }
+}
+
+void preencherVetorMelhorCaso(int v[], int tam) {
+    for (int i = 0; i < tam; i++) {
+        v[i] = i;
+    }
+}
+
+void preencherVetorPiorCaso(int v[], int tam) {
+    for (int i = 0; i < tam; i++) {
+        v[i] = tam - i - 1;
+    }
+}
+
+void mostrar_vetor(int v[], int tam) {
+    for (int i = 0; i < tam; i++) {
+        cout << v[i] << "  ";
+    }
+}
+
+void quicksortmeio(int v[], int esq, int dir) {
+    int aux;
+    int i = esq;
+    int j = dir;
+    int x = v[(i + j) / 2];
+
+    do {
+        while (x > v[i]) i++;
+        while (x < v[j]) j--;
+        if (i <= j) {
+            aux = v[i];
+            v[i] = v[j];
+            v[j] = aux;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+    if (esq < j) quicksortmeio(v, esq, j);
+    if (dir > i) quicksortmeio(v, i, dir);
+}
+
+void troca(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+void quicksortprimeiro(int v[], int esq, int dir) {
+    while (esq < dir) {
+        int i = esq;
+        int j = dir;
+        int x = v[esq];  //esq é o primeiro elemento
+
+        do {
+            while (x > v[i]) i++;
+            while (x < v[j]) j--;
+
+            if (i <= j) {
+                troca(v[i], v[j]);
+                i++;
+                j--;
+            }
+        } while (i <= j);
+
+        // pra nao dar stack overflow ajusta o limite do subvetor
+        if (j - esq < dir - i) {
+            if (esq < j) quicksortprimeiro(v, esq, j);
+            esq = i;
+        }
+        else {
+            if (i < dir) quicksortprimeiro(v, i, dir);
+            dir = j;
+        }
+    }
+}
+
+void quicksortultimo(int v[], int esq, int dir) {
+    while (esq < dir) {
+        int i = esq;
+        int j = dir;
+        int x = v[dir];  //dir é o ultimo elemento
+
+        do {
+            while (x > v[i]) i++;
+            while (x < v[j]) j--;
+
+            if (i <= j) {
+                troca(v[i], v[j]);
+                i++;
+                j--;
+            }
+        } while (i <= j);
+
+        // pra nao dar stack overflow ajusta o limite do subvetor
+        if (j - esq < dir - i) {
+            if (esq < j) quicksortultimo(v, esq, j);
+            esq = i;
+        }
+        else {
+            if (i < dir) quicksortultimo(v, i, dir);
+            dir = j;
+        }
+    }
+}
+
+int fazerMediana(int v[], int i, int j, int k) {
+    if ((v[i] <= v[j] && v[j] <= v[k]) || (v[k] <= v[j] && v[j] <= v[i])) //se isso for vdd quer dizer que o v[j] ta na posicao mediana dai vai retornar j
+        return j;                                                           //mesma coisa pros outros
+    else if ((v[j] <= v[i] && v[i] <= v[k]) || (v[k] <= v[i] && v[i] <= v[j]))
+        return i;
+    else
+        return k;
+}
+
+void quicksortMediano(int v[], int esq, int dir) {
+    int aux;
+    int i = esq;
+    int j = dir;
+
+    int meio = fazerMediana(v, esq, (esq + dir) / 2, dir);
+    int x = v[meio];
+
+    do {
+        while (x > v[i]) i++;
+        while (x < v[j]) j--;
+        if (i <= j) {
+            troca(v[i], v[j]);
+            i++;
+            j--;
+        }
+    } while (i <= j);
+    if (esq < j) quicksortmeio(v, esq, j);
+    if (dir > i) quicksortmeio(v, i, dir);
+}
+
+void mostrarMediasMelhorPior(int vezesRodadas, double melhorprimeiro[], double melhormeio[], double melhorultimo[], double melhormediano[], double piorPrimeiro[], double piorMeio[], double piorUltimo[], double piorMediano[]) {
+    for (int i = 0; i < vezesRodadas; i++) {
+        cout << i + 1 << "a rodada do melhor: " << endl;
+        cout << "Tempo de execucao do Primeiro: " << melhorprimeiro[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Meio: " << melhormeio[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Ultimo: " << melhorultimo[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Mediano: " << melhormediano[i] << " microssegundos" << endl << endl;
+        cout << i + 1 << "a rodada do pior: " << endl;
+        cout << "Tempo de execucao do Primeiro: " << piorPrimeiro[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Meio: " << piorMeio[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Ultimo: " << piorUltimo[i] << " microssegundos" << endl;
+        cout << "Tempo de execucao do Mediano: " << piorMediano[i] << " microssegundos" << endl;
+        cout << endl;
+    }
+}
+
+void mostrarMediasCasos(int vezesRodadas, int qntCasos, vetorcasos casosTempo[]) {
+    for (int i = 0; i < qntCasos; i++) {
+        cout << "caso: " << i + 1 << endl;
+        for (int j = 0; j < vezesRodadas; j++)
+        {
+            cout << j + 1 << "a rodada: " << endl;
+            cout << "Tempo de execucao do Primeiro: " << casosTempo[i].vetPrimeiro[j] << " microssegundos" << endl;
+            cout << "Tempo de execucao do Meio: " << casosTempo[i].vetMeio[j] << " microssegundos" << endl;
+            cout << "Tempo de execucao do Ultimo: " << casosTempo[i].vetUltimo[j] << " microssegundos" << endl;
+            cout << "Tempo de execucao do Mediano: " << casosTempo[i].vetMedio[j] << " microssegundos" << endl;
+            cout << endl;
+        }
+    }
+}
+
+int main() {
+
+    srand(time(NULL));
+
+    int tamVetor = 0, qtdCasos = 0, qtdExecucoes = 0;
+    double tempoTotalmeio = 0;
+    double tempoTotalPrimeiro = 0;
+    double tempoTotalUltimo = 0;
+    double tempoTotalMediano = 0;
+    double* tempoMelhorPrimeiro = new double[limite];  double* tempoPiorPrimeiro = new double[limite]; double* tempoMediosPrimeiro = new double[limite];
+    double* tempoMelhorMeio = new double[limite]; double* tempoPiorMeio = new double[limite]; double* tempoMediosMeio = new double[limite];
+    double* tempoMelhorUltimo = new double[limite]; double* tempoPiorUltimo = new double[limite]; double* tempoMediosUltimo = new double[limite];
+    double* tempoMelhorMedio = new double[limite]; double* tempoPiorMedio = new double[limite]; double* tempoMediosMedio = new double[limite];
+
+    perguntarVezes(tamVetor, qtdCasos, qtdExecucoes);
+
+    //MELHOR
+    int* vetormelhor = new int[limite];
+    preencherVetorMelhorCaso(vetormelhor, tamVetor);
+    cout << "\nVetor melhor caso " << endl;
+    mostrar_vetor(vetormelhor, tamVetor);
+    cout << endl;
+
+    for (int k = 0; k < qtdExecucoes; ++k) {
+        auto start1Primeiro = chrono::high_resolution_clock::now();
+        quicksortprimeiro(vetormelhor, 0, tamVetor - 1);
+        auto endPrim = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoPrimeiro = chrono::duration_cast<chrono::microseconds>(endPrim - start1Primeiro);
+        tempoPiorPrimeiro[k] = tempoExecucaoPrimeiro.count();
+        cout << "\nPrimeiro Pivo - Execucao " << k + 1 << endl;
+        mostrar_vetor(vetormelhor, tamVetor);
+        cout << endl;
+
+        auto startMeio = chrono::high_resolution_clock::now();
+        quicksortmeio(vetormelhor, 0, tamVetor - 1);
+        auto endMeio = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoMeio = chrono::duration_cast<chrono::microseconds>(endMeio - startMeio);
+        tempoMelhorMeio[k] = tempoExecucaoMeio.count();
+        cout << "\nPivo Meio - Execucao " << k + 1 << endl;
+        mostrar_vetor(vetormelhor, tamVetor);
+        cout << endl;
+
+        auto startUltimo = chrono::high_resolution_clock::now();
+        quicksortultimo(vetormelhor, 0, tamVetor - 1);
+        auto endUlt = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoUltimo = chrono::duration_cast<chrono::microseconds>(endUlt - startUltimo);
+        tempoMelhorUltimo[k] = tempoExecucaoUltimo.count();
+        cout << "\nUltimo Pivo - Execucao " << k + 1 << endl;
+        mostrar_vetor(vetormelhor, tamVetor);
+        cout << endl;
+
+        auto startMedio = chrono::high_resolution_clock::now();
+        quicksortMediano(vetormelhor, 0, tamVetor - 1);
+        auto endMedi = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoMedi = chrono::duration_cast<chrono::microseconds>(endMedi - startMedio);
+        tempoMelhorMedio[k] = tempoExecucaoMedi.count();
+        cout << "\nMediano do melhor caso - Execucao " << k + 1  << endl;
+        mostrar_vetor(vetormelhor, tamVetor);
+        cout << endl << endl;
+    }
+
+    //PIOR
+    int vetorpior[limite];
+    preencherVetorPiorCaso(vetorpior, tamVetor);
+    cout << "\n\nVetor pior caso: " << endl;
+    mostrar_vetor(vetorpior, tamVetor);
+    cout << endl;
+    for (int p = 0; p < qtdExecucoes; ++p) {
+        auto start1Primeiro = chrono::high_resolution_clock::now();
+        quicksortprimeiro(vetorpior, 0, tamVetor - 1);
+        auto endPrim = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoPrimeiro = chrono::duration_cast<chrono::microseconds>(endPrim - start1Primeiro);
+        tempoPiorPrimeiro[p] = tempoExecucaoPrimeiro.count();
+        cout << "\nPrimeiro Pivo - Execucao " << p + 1 << endl;
+        mostrar_vetor(vetorpior, tamVetor);
+        cout << endl;
+
+        auto startMeio = chrono::high_resolution_clock::now();
+        quicksortmeio(vetorpior, 0, tamVetor - 1);
+        auto endMeio = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoMeio = chrono::duration_cast<chrono::microseconds>(endMeio - startMeio);
+        tempoPiorMeio[p] = tempoExecucaoMeio.count();
+        cout << "\nPivo Meio - Execucao " << p + 1 << endl;
+        mostrar_vetor(vetorpior, tamVetor);
+        cout << endl;
+
+        auto startUltimo = chrono::high_resolution_clock::now();
+        quicksortultimo(vetorpior, 0, tamVetor - 1);
+        auto endUlt = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoUltimo = chrono::duration_cast<chrono::microseconds>(endUlt - startUltimo);
+        tempoPiorUltimo[p] = tempoExecucaoUltimo.count();
+        cout << "\nUltimo Pivo - Execucao " << p + 1 << endl;
+        mostrar_vetor(vetorpior, tamVetor);
+        cout << endl;
+
+        auto startMedio = chrono::high_resolution_clock::now();
+        quicksortMediano(vetorpior, 0, tamVetor - 1);
+        auto endMedio = chrono::high_resolution_clock::now();
+        chrono::microseconds tempoExecucaoMedio = chrono::duration_cast<chrono::microseconds>(endMedio - startMedio);
+        tempoPiorMedio[p] = tempoExecucaoMedio.count();
+        cout << "\nMediano do pior caso - Execucao " << p + 1 << endl;
+        mostrar_vetor(vetorpior, tamVetor);
+        cout << endl << endl;
+    }
+
+    //CASOS 
+    vetorcasos* vetTempoCasos = new vetorcasos[limite];
+
+    for (int y = 0; y < qtdCasos; ++y)
+    {
+        int vetorcaso[limite];
+        preencher_vetor(vetorcaso, tamVetor);
+        cout << "\n\nVetor caso " << y + 1 << ": " << endl;
+        mostrar_vetor(vetorcaso, tamVetor);
+        cout << endl;
+        for (int k = 0; k < qtdExecucoes; ++k){
+            auto start1Primeiro = chrono::high_resolution_clock::now();
+            quicksortprimeiro(vetorcaso, 0, tamVetor - 1);
+            auto endPrim = chrono::high_resolution_clock::now();
+            chrono::microseconds tempoExecucaoPrim = chrono::duration_cast<chrono::microseconds>(endPrim - start1Primeiro);
+            tempoMediosPrimeiro[k] = tempoExecucaoPrim.count();
+            vetTempoCasos[y].vetPrimeiro[k] = tempoMediosPrimeiro[k];
+            cout << "\nPrimeiro Pivo - Execucao " << k + 1 << endl;
+            mostrar_vetor(vetorcaso, tamVetor);
+            cout << endl;
+
+            auto startMeio = chrono::high_resolution_clock::now();
+            quicksortmeio(vetorcaso, 0, tamVetor - 1);
+            auto endMeio = chrono::high_resolution_clock::now();
+            chrono::microseconds tempoExecucaoMeio = chrono::duration_cast<chrono::microseconds>(endMeio - startMeio);
+            tempoMediosMeio[k] = tempoExecucaoMeio.count();
+            vetTempoCasos[y].vetMeio[k] = tempoMediosPrimeiro[k];
+            cout << "\nPivo Meio - Execucao " << k + 1 << endl;
+            mostrar_vetor(vetorcaso, tamVetor);
+            cout << endl;
+
+            auto startUltimo = chrono::high_resolution_clock::now();
+            quicksortultimo(vetorcaso, 0, tamVetor - 1);
+            auto endUlt = chrono::high_resolution_clock::now();
+            chrono::microseconds tempoExecucaoUlt = chrono::duration_cast<chrono::microseconds>(endUlt - startUltimo);
+            tempoMediosUltimo[k] = tempoExecucaoUlt.count();
+            vetTempoCasos[y].vetUltimo[k] = tempoMediosPrimeiro[k];
+            cout << "\nUltimo Pivo - Execucao " << k + 1 << endl;
+            mostrar_vetor(vetorcaso, tamVetor);
+            cout << endl;
+
+            auto startMedio = chrono::high_resolution_clock::now();
+            quicksortMediano(vetorcaso, 0, tamVetor - 1);
+            auto endMedi = chrono::high_resolution_clock::now();
+            chrono::microseconds tempoExecucaoMedi = chrono::duration_cast<chrono::microseconds>(endMedi - startMedio);
+            tempoMediosMedio[k] = tempoExecucaoMedi.count();
+            vetTempoCasos[y].vetMedio[k] = tempoMediosPrimeiro[k];
+            cout << "\nMediano do vetor - Execucao " << k + 1 << endl;
+            mostrar_vetor(vetorcaso, tamVetor);
+            cout << endl << endl << endl;
+        }
+    }
+    mostrarMediasMelhorPior(qtdExecucoes, tempoMelhorPrimeiro, tempoMelhorMeio, tempoMelhorUltimo, tempoMelhorMedio, tempoPiorPrimeiro, tempoPiorMeio, tempoPiorUltimo, tempoPiorMedio);
+    mostrarMediasCasos(qtdExecucoes, qtdCasos, vetTempoCasos);
+
+    cout << endl;
+    delete[] vetormelhor; delete[] vetTempoCasos;
+    delete[] tempoMelhorPrimeiro; delete[] tempoPiorPrimeiro; delete[] tempoMediosPrimeiro;
+    delete[] tempoMelhorMeio; delete[] tempoPiorMeio; delete[] tempoMediosMeio;
+    delete[] tempoMelhorUltimo; delete[] tempoPiorUltimo; delete[] tempoMediosUltimo;
+    delete[] tempoMelhorMedio; delete[] tempoPiorMedio; delete[] tempoMediosMedio;
+
+    return 0;
+}
